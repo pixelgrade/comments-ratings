@@ -10,13 +10,16 @@
 
 	isset($type) or $type = 'text';
 
-	$attrs = array
-		(
-			'name' => $name,
-			'id' => $idname,
-			'type' => 'text',
-			'value' => $form->autovalue($name)
-		);
+	$attrs = array (
+		'name' => $name,
+		'id' => $idname,
+		'type' => 'text',
+		'value' => $form->autovalue($name),
+	);
+
+if ( $field->hasmeta('size') ) {
+	$attrs['size'] = $field->getmeta('size');
+}
 ?>
 
 <?php if ($rendering == 'inline'): ?>

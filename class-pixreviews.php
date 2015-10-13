@@ -277,12 +277,12 @@ class PixReviewsPlugin {
 			$data .= 'data-score="' . $rating . '"';
 		} ?>
 		<span id="add_comment_rating_wrap">
-			<label for="add_post_rating"></label>
+			<label for="add_post_rating"><?php echo $this->get_plugin_option( 'review_rating_label' ); ?></label>
 			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
 		</span>
 
 		<p class="review-title-form">
-			<label for="pixrating_title"><?php _e('Review Title', 'pixreviews_txtd' ); ?></label>
+			<label for="pixrating_title"><?php echo $this->get_plugin_option( 'review_title_label' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
 		</p>
 		<?php
