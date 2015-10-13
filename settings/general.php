@@ -5,8 +5,8 @@ $general_settings = array(
 	'label'   => 'General Settings',
 	'options' => array(
 
-		'enable_ratings'   => array(
-				'label'          => __( 'Enable Ratings only on some post types?', 'pixcustomify_txtd' ),
+		'enable_selective_ratings'   => array(
+				'label'          => __( 'Select which post types should have ratings?', 'pixcustomify_txtd' ),
 				'default'        => false,
 				'type'           => 'switch',
 				'show_group'     => 'post_types_group'

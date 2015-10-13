@@ -43,6 +43,7 @@ $errors    = $processor->errors(); ?>
 		<?php endif;
 		echo $f = pixreviews::form( $config, $processor );
 		echo $f->field( 'hiddens' )->render();
+		echo $f->field( 'labels' )->render();
 		echo $f->field( 'general' )->render(); ?>
 		<button type="submit" class="button button-primary">
 			<?php _e( 'Save Changes', 'pixreviews_txtd' ); ?>

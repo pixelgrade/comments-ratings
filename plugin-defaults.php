@@ -1,8 +1,9 @@
 <?php return array(
 
 	# Hidden fields
-	'settings_saved_once'                   => '0',
+	'settings_saved_once'      => '0',
 	# General
-	'values_store_mod'                => 'option',
+	'enable_selective_ratings' => false,
+	'review_label'             => __( 'Your overall rating of this listing:', 'pixcustomify_txtd' ),
 
 ); # config

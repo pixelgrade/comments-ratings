@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PixReviews.
  * @package   PixReviewsPlugin
@@ -46,23 +47,30 @@ class PixReviewsPlugin {
 	protected $plugin_basepath = null;
 	protected $plugin_baseurl = null;
 
-	public $display_admin_menu = false;
-
 	protected static $config;
 
 	public static $plugin_settings;
 
 	protected static $localized = array();
 
+	protected static $default_ratings = null;
+
 	/**
 	 * Initialize the plugin by setting localization, filters, and administration functions.
 	 * @since     1.0.0
 	 */
 	protected function __construct() {
-		$this->plugin_basepath = plugin_dir_path( __FILE__ );
-		$this->plugin_baseurl = plugin_dir_url( __FILE__ );
+		$this->plugin_basepath = self::get_base_path();
+		$this->plugin_baseurl  = self::get_base_url();
 		self::$config          = self::get_config();
 		self::$plugin_settings = get_option( 'pixreviews_settings' );
+		self::$default_ratings = array(
+			__( 'Terrible', 'pixreviews_txtd' ),
+			__( 'Poor', 'pixreviews_txtd' ),
+			__( 'Average', 'pixreviews_txtd' ),
+			__( 'Very Good', 'pixreviews_txtd' ),
+			__( 'Exceptional', 'pixreviews_txtd' ),
+		);
 
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
@@ -79,11 +87,18 @@ class PixReviewsPlugin {
 		// Load public-facing style sheet and JavaScript.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-		add_action( 'comment_form_logged_in_after', array( $this, 'output_rating_field' ) ); // Logged in
-		add_action( 'comment_form_after_fields', array( $this, 'output_rating_field' ) ); // Guest
+		add_action( 'comment_form_logged_in_after', array( $this, 'output_review_fields' ) ); // Logged in
+		add_action( 'comment_form_after_fields', array( $this, 'output_review_fields' ) ); // Guest
 
 		add_action( 'comment_post', array( $this, 'save_comment' ) );
 		add_action( 'comment_text', array( $this, 'display_rating' ) );
+
+		// now the admin part
+		// only found this hook to process the POST
+		add_filter( 'comment_edit_redirect', array( $this, 'save_comment_backend' ), 10, 2 );
+
+		// META BOX
+		add_action( 'add_meta_boxes', array( $this, 'add_custom_backend_box' ) );
 	}
 
 	/**
@@ -136,7 +151,7 @@ class PixReviewsPlugin {
 	/**
 	 * Settings page scripts
 	 */
-	function enqueue_admin_scripts() {
+	function enqueue_admin_scripts( $hook_suffix ) {
 
 		if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
 			return;
@@ -148,6 +163,15 @@ class PixReviewsPlugin {
 			wp_localize_script( $this->plugin_slug . '-admin-script', 'locals', array(
 				'ajax_url' => admin_url( 'admin-ajax.php' )
 			) );
+		} elseif ( $hook_suffix === 'comment.php' ) {
+			wp_enqueue_script( 'jquery-raty', $this->plugin_baseurl . 'js/jquery.raty.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_style( 'jquery-raty-style', $this->plugin_baseurl . 'css/jquery.raty.css', array(), $this->version, false );
+			wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js', array( 'jquery-raty' ), $this->version, true );
+
+			wp_localize_script( 'reviews-scripts', 'pixreviews', array(
+					'hints' => self::$default_ratings
+				)
+			);
 		}
 	}
 
@@ -156,19 +180,16 @@ class PixReviewsPlugin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+		if ( ! $this->is_visible_on_this_post() ) {
+			return;
+		}
 		// add assets here
-		wp_enqueue_script( 'jquery-raty', $this->plugin_baseurl . 'js/jquery.raty.js' , array( 'jquery' ), $this->version, true );
-		wp_enqueue_style( 'jquery-raty-style', $this->plugin_baseurl . 'css/jquery.raty.css' , array(), $this->version, false );
-		wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js' , array( 'jquery-raty' ), $this->version, true );
+		wp_enqueue_script( 'jquery-raty', $this->plugin_baseurl . 'js/jquery.raty.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_style( 'jquery-raty-style', $this->plugin_baseurl . 'css/jquery.raty.css', array(), $this->version, false );
+		wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js', array( 'jquery-raty' ), $this->version, true );
 
 		wp_localize_script( 'reviews-scripts', 'pixreviews', array(
-				'hints' => array (
-					__( 'Terrible', 'pixreviews_txtd'),
-					__( 'Poor', 'pixreviews_txtd'),
-					__( 'Average', 'pixreviews_txtd'),
-					__( 'Very Good', 'pixreviews_txtd'),
-					__( 'Exceptional', 'pixreviews_txtd'),
-				)
+				'hints' => self::$default_ratings
 			)
 		);
 	}
@@ -198,53 +219,153 @@ class PixReviewsPlugin {
 	}
 
 	function save_comment( $commentID ) {
+
+		if ( ! $this->is_visible_on_this_post() ) {
+			return;
+		}
+
 		// Save rating against comment
 		if ( isset( $_POST['score'] ) && is_numeric( $_POST['score'] ) ) {
 			update_comment_meta( $commentID, 'pixrating', $_POST['score'], true );
 		}
 
-		if ( isset( $_POST['pixrating_title'] ) && is_numeric( $_POST['pixrating_title'] ) ) {
-			update_comment_meta( $commentID, 'pixrating_title', $_POST['pixrating_title'], true );
+		if ( isset( $_POST['pixrating_title'] ) && is_string( $_POST['pixrating_title'] ) ) {
+			update_comment_meta( $commentID, 'pixrating_title', sanitize_text_field( $_POST['pixrating_title'] ), true );
 		}
 	}
 
 	function display_rating( $comment ) {
 		global $post;
 
-		$commentID = get_comment_ID();
-		$rating    = get_comment_meta( $commentID, 'pixrating', true );
-		$pixrating_title    = get_comment_meta( $commentID, 'pixrating_title', true );
+		if ( ! $this->is_visible_on_this_post() ) {
+			return $comment;
+		}
+
+		$commentID       = get_comment_ID();
+		$rating          = get_comment_meta( $commentID, 'pixrating', true );
+		$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
 
 		if ( ! empty( $rating ) ) {
-			$output = '<div class="comment_rate" data-score="' . $rating . '"></div>';
-
-			$comment .= $output . $comment;
+			$comment = '<div class="comment_rate" data-score="' . $rating . '"></div>' . $comment;
 		}
 
 		if ( ! empty( $pixrating_title ) ) {
-			$output = '<span class="review_title">'. $pixrating_title .' </span>';
-
-			$comment .= $output . $comment;
+			$comment = '<h3 class="pixrating_title">"' . $pixrating_title . '"</h3>' . $comment;
 		}
-
 		return $comment;
 	}
 
-	function output_rating_field() {
+	function output_review_fields() {
 		global $post;
-		$commentID = get_comment_ID();
-		$rating    = get_comment_meta( $commentID, 'pixrating', true );
+
+		if ( ! $this->is_visible_on_this_post() ) {
+			return;
+		}
+
+		global $comment;
+		$rating          = '';
+		$pixrating_title = '';
+		if ( ! empty( $comment ) ) {
+			$commentID       = get_comment_ID();
+			$rating          = get_comment_meta( $commentID, 'pixrating', true );
+			$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
+		}
 
 		// if there is a value, display it
 		$data = '';
 		if ( ! empty( $rating ) ) {
 			$data .= 'data-score="' . $rating . '"';
 		} ?>
+		<span id="add_comment_rating_wrap">
+			<label for="add_post_rating"></label>
+			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
+		</span>
 
-		<fieldset id="add_comment_rating_wrap">
-			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl .'/images'; ?>" > </div>
-		</fieldset>
+		<p class="review-title-form">
+			<label for="pixrating_title"><?php _e('Review Title', 'pixreviews_txtd' ); ?></label>
+			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
+		</p>
 		<?php
+	}
+
+	/**
+	 * Save Custom Comment Field
+	 * This hook deals with the redirect after saving, we are only taking advantage of it
+	 */
+	function save_comment_backend( $location, $comment_id ) {
+		// Not allowed, return regular value without updating meta
+		if ( ! wp_verify_nonce( $_POST['noncename_wpse_82317'], plugin_basename( __FILE__ ) )
+		     && ! isset( $_POST['pixrating_title'] )
+		) {
+			return $location;
+		}
+
+		// Update meta
+		update_comment_meta(
+			$comment_id,
+			'pixrating_title',
+			sanitize_text_field( $_POST['pixrating_title'] )
+		);
+
+		// Return regular value after updating
+		return $location;
+	}
+
+	/**
+	 * Add Comment meta box
+	 */
+	function add_custom_backend_box() {
+		add_meta_box(
+			'section_id_wpse_82317',
+			__( 'Review Fields', 'pixreviews_txtd' ),
+			array( $this, 'inner_custom_backend_box' ),
+			'comment',
+			'normal'
+		);
+	}
+
+	/**
+	 * Render meta box with Custom Field
+	 */
+	function inner_custom_backend_box( $comment ) {
+		// Use nonce for verification
+		wp_nonce_field( plugin_basename( __FILE__ ), 'noncename_wpse_82317' );
+
+		$pixrating_title         = get_comment_meta( $comment->comment_ID, 'pixrating_title', true );
+		$current_rating = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
+		<fieldset>
+			<label for="pixrating_title">Review Title</label>
+			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
+		</fieldset>
+		<?php // if there is a value, display it
+		$data = '';
+		if ( ! empty( $rating ) ) {
+			$data .= 'data-score="' . $current_rating . '"';
+		} ?>
+		<fieldset id="add_comment_rating_wrap">
+			<?php ?>
+			<label for="add_post_rating"><?php _e( 'Rating:', 'pixreviews_txtd' ) ?></label>
+
+			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
+		</fieldset>
+	<?php }
+
+	function is_visible_on_this_post() {
+		$is_selective = $this->get_plugin_option( 'enable_selective_ratings' );
+
+		if ( $is_selective ) {
+			$post_types = $this->get_plugin_option( 'display_on_post_types' );
+			$post_type  = get_post_type();
+			global $post;
+			if ( $post_type && is_array( $post_types ) ) {
+				return array_key_exists( $post_type, $post_types );
+			}
+
+			return false;
+		}
+
+		// by default the rating is visible everywhere
+		return true;
 	}
 
 	protected static function get_config() {
@@ -284,5 +405,9 @@ class PixReviewsPlugin {
 
 	static function get_base_path() {
 		return plugin_dir_path( __FILE__ );
+	}
+
+	static function get_base_url() {
+		return plugin_dir_url( __FILE__ );
 	}
 }

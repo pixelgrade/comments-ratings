@@ -49,6 +49,7 @@
   position: relative;
   width: 240px;
   font-size: 12px;
+  display: inline-block;
 }
 
 #add_post_rating {
