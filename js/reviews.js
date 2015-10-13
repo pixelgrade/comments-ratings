@@ -24,7 +24,7 @@
 			starType : 'i'
 		});
 
-		$('.comment_rate' ).raty({
+		$('.review_rate' ).raty({
 			readOnly: true,
 			//target : this,
 			half: true,

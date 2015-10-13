@@ -246,7 +246,7 @@ class PixReviewsPlugin {
 		$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
 
 		if ( ! empty( $rating ) ) {
-			$comment = '<div class="comment_rate" data-score="' . $rating . '"></div>' . $comment;
+			$comment = '<div class="review_rate" data-score="' . $rating . '"></div>' . $comment;
 		}
 
 		if ( ! empty( $pixrating_title ) ) {
