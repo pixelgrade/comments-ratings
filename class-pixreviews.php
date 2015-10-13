@@ -74,7 +74,6 @@ class PixReviewsPlugin {
 
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
-
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		// Add an action link pointing to the options page.
@@ -94,10 +93,7 @@ class PixReviewsPlugin {
 		add_action( 'comment_text', array( $this, 'display_rating' ) );
 
 		// now the admin part
-		// only found this hook to process the POST
 		add_filter( 'comment_edit_redirect', array( $this, 'save_comment_backend' ), 10, 2 );
-
-		// META BOX
 		add_action( 'add_meta_boxes', array( $this, 'add_custom_backend_box' ) );
 	}
 
@@ -280,7 +276,6 @@ class PixReviewsPlugin {
 			<label for="add_post_rating"><?php echo $this->get_plugin_option( 'review_rating_label' ); ?></label>
 			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
 		</span>
-
 		<p class="review-title-form">
 			<label for="pixrating_title"><?php echo $this->get_plugin_option( 'review_title_label' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
@@ -334,7 +329,7 @@ class PixReviewsPlugin {
 		$pixrating_title         = get_comment_meta( $comment->comment_ID, 'pixrating_title', true );
 		$current_rating = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
 		<fieldset>
-			<label for="pixrating_title">Review Title</label>
+			<label for="pixrating_title"><?php _e( 'Review Title', 'pixreviews_txtd' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
 		</fieldset>
 		<?php // if there is a value, display it
@@ -349,6 +344,32 @@ class PixReviewsPlugin {
 			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
 		</fieldset>
 	<?php }
+
+	function get_average_rating( $post_id = null, $decimals = 2 ) {
+
+		if ( empty( $post_id ) ) {
+			global $post;
+			$post_id = $post->ID;
+		}
+
+		$comments = get_comments( array(
+			'post_id' => $post_id,
+			'meta_key' => 'pixrating'
+		));
+
+		if ( empty( $comments ) ) {
+			return false;
+		}
+
+		$total = 0;
+		foreach ($comments as $comment ) {
+			$total = $total + (double) $comment->meta_value;
+		}
+
+		$average = $total / count( $comments );
+
+		return number_format( $average, $decimals);
+	}
 
 	function is_visible_on_this_post() {
 		$is_selective = $this->get_plugin_option( 'enable_selective_ratings' );
