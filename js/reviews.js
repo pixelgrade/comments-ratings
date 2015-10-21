@@ -1,7 +1,12 @@
 (function($){
 	$(document ).ready(function(){
 		var $rates = $('#add_comment_rating_wrap'),
-			path = $rates.data('assets_path');
+			path = $rates.data('assets_path' ),
+			default_score = 4;
+
+		if ( typeof $('#add_post_rating').attr('data-score') !== 'undefined' ) {
+			default_score = $('#add_post_rating').attr('data-score');
+		}
 
 		$rates.raty({
 			half: false,
@@ -12,9 +17,7 @@
 			//targetType : 'score',
 			targetType : 'hint',
 			//precision  : true,
-			score: function() {
-				return $(this).attr('data-score');
-			},
+			score: default_score,
 			click: function(score, evt) {
 				$('#add_post_rating' ).val( '' + score );
 				$('#add_post_rating option[value="' + score + '"]' ).attr( 'selected', 'selected' );

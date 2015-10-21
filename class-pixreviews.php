@@ -89,6 +89,10 @@ class PixReviewsPlugin {
 		add_action( 'comment_form_logged_in_after', array( $this, 'output_review_fields' ) ); // Logged in
 		add_action( 'comment_form_after_fields', array( $this, 'output_review_fields' ) ); // Guest
 
+
+		add_action( 'comment_form_field_comment', array( $this, 'filter_comment_form' ) );
+		add_action( 'comment_form_defaults', array( $this, 'filter_submit_comment_button' ) );
+
 		add_action( 'comment_post', array( $this, 'save_comment' ) );
 		add_action( 'comment_text', array( $this, 'display_rating' ) );
 
@@ -246,8 +250,9 @@ class PixReviewsPlugin {
 		}
 
 		if ( ! empty( $pixrating_title ) ) {
-			$comment = '<h3 class="pixrating_title">"' . $pixrating_title . '"</h3>' . $comment;
+			$comment = '<h3 class="pixrating_title">' . $pixrating_title . '</h3>' . $comment;
 		}
+
 		return $comment;
 	}
 
@@ -259,28 +264,40 @@ class PixReviewsPlugin {
 		}
 
 		global $comment;
-		$rating          = '';
 		$pixrating_title = '';
 		if ( ! empty( $comment ) ) {
 			$commentID       = get_comment_ID();
-			$rating          = get_comment_meta( $commentID, 'pixrating', true );
 			$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
 		}
 
-		// if there is a value, display it
-		$data = '';
-		if ( ! empty( $rating ) ) {
-			$data .= 'data-score="' . $rating . '"';
-		} ?>
-		<span id="add_comment_rating_wrap">
+
+		$title_label       = $this->get_plugin_option( 'review_title_label' );
+		$title_placeholder = $this->get_plugin_option( 'review_title_placeholder' ); ?>
+		<div id="add_comment_rating_wrap">
 			<label for="add_post_rating"><?php echo $this->get_plugin_option( 'review_rating_label' ); ?></label>
-			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
-		</span>
+
+			<div id="add_post_rating" data-score="<?php esc_attr_e( $this->get_plugin_option( 'default_rating' ) ); ?>" data-assets_path="<?php esc_attr_e(  $this->plugin_baseurl . '/images' ); ?>"></div>
+		</div>
 		<p class="review-title-form">
 			<label for="pixrating_title"><?php echo $this->get_plugin_option( 'review_title_label' ); ?></label>
-			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
+			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr_e( $pixrating_title ) ?>" placeholder="<?php esc_attr_e( $title_placeholder ) ?>" size='25'/>
 		</p>
 		<?php
+	}
+
+	function filter_comment_form( $html ) {
+		$label              = $this->get_plugin_option( 'review_label' );
+		$review_placeholder = $this->get_plugin_option( 'review_placeholder' );
+
+		return '<p class="comment-form-comment"><label for="comment">' . $label . '</label> <textarea id="comment" name="comment" cols="45" rows="8"  aria-required="true" required="required" placeholder="' . $review_placeholder . '"></textarea></p>';
+	}
+
+	function filter_submit_comment_button( $args ) {
+
+		$label                = $this->get_plugin_option( 'review_submit_button' );
+		$args['label_submit'] = $label;
+
+		return $args;
 	}
 
 	/**
@@ -326,8 +343,8 @@ class PixReviewsPlugin {
 		// Use nonce for verification
 		wp_nonce_field( plugin_basename( __FILE__ ), 'noncename_wpse_82317' );
 
-		$pixrating_title         = get_comment_meta( $comment->comment_ID, 'pixrating_title', true );
-		$current_rating = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
+		$pixrating_title = get_comment_meta( $comment->comment_ID, 'pixrating_title', true );
+		$current_rating  = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
 		<fieldset>
 			<label for="pixrating_title"><?php _e( 'Review Title', 'pixreviews_txtd' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
@@ -353,22 +370,22 @@ class PixReviewsPlugin {
 		}
 
 		$comments = get_comments( array(
-			'post_id' => $post_id,
-			'meta_key' => 'pixrating'
-		));
+			'post_id'  => $post_id,
+			'meta_key' => 'pixrating',
+		) );
 
 		if ( empty( $comments ) ) {
 			return false;
 		}
 
 		$total = 0;
-		foreach ($comments as $comment ) {
+		foreach ( $comments as $comment ) {
 			$total = $total + (double) $comment->meta_value;
 		}
 
 		$average = $total / count( $comments );
 
-		return number_format( $average, $decimals);
+		return number_format( $average, $decimals );
 	}
 
 	function is_visible_on_this_post() {
