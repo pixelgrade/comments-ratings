@@ -89,9 +89,10 @@ class PixReviewsPlugin {
 		add_action( 'comment_form_logged_in_after', array( $this, 'output_review_fields' ) ); // Logged in
 		add_action( 'comment_form_after_fields', array( $this, 'output_review_fields' ) ); // Guest
 
-
-		add_action( 'comment_form_field_comment', array( $this, 'filter_comment_form' ) );
-		add_action( 'comment_form_defaults', array( $this, 'filter_submit_comment_button' ) );
+		if ( $this->is_visible_on_this_post() ) {
+			add_action( 'comment_form_field_comment', array( $this, 'filter_comment_form' ) );
+			add_action( 'comment_form_defaults', array( $this, 'filter_submit_comment_button' ) );
+		}
 
 		add_action( 'comment_post', array( $this, 'save_comment' ) );
 		add_action( 'comment_text', array( $this, 'display_rating' ) );
