@@ -89,10 +89,9 @@ class PixReviewsPlugin {
 		add_action( 'comment_form_logged_in_after', array( $this, 'output_review_fields' ) ); // Logged in
 		add_action( 'comment_form_after_fields', array( $this, 'output_review_fields' ) ); // Guest
 
-		if ( $this->is_visible_on_this_post() ) {
-			add_action( 'comment_form_field_comment', array( $this, 'filter_comment_form' ) );
-			add_action( 'comment_form_defaults', array( $this, 'filter_submit_comment_button' ) );
-		}
+		add_action( 'comment_form_field_comment', array( $this, 'filter_comment_form' ) );
+		add_action( 'comment_form_defaults', array( $this, 'filter_submit_comment_button' ) );
+
 
 		add_action( 'comment_post', array( $this, 'save_comment' ) );
 		add_action( 'comment_text', array( $this, 'display_rating' ) );
@@ -287,6 +286,9 @@ class PixReviewsPlugin {
 	}
 
 	function filter_comment_form( $html ) {
+		if ( ! $this->is_visible_on_this_post() ) {
+			return $html;
+		}
 		$label              = $this->get_plugin_option( 'review_label' );
 		$review_placeholder = $this->get_plugin_option( 'review_placeholder' );
 
@@ -294,7 +296,9 @@ class PixReviewsPlugin {
 	}
 
 	function filter_submit_comment_button( $args ) {
-
+		if ( ! $this->is_visible_on_this_post() ) {
+			return $args;
+		}
 		$label                = $this->get_plugin_option( 'review_submit_button' );
 		$args['label_submit'] = $label;
 
@@ -391,11 +395,16 @@ class PixReviewsPlugin {
 
 	function is_visible_on_this_post() {
 		$is_selective = $this->get_plugin_option( 'enable_selective_ratings' );
+		global $post;
+		$post_id = 0;
 
+		if ( isset( $post->ID ) ) {
+			$post_id = $post->ID;
+		}
 		if ( $is_selective ) {
 			$post_types = $this->get_plugin_option( 'display_on_post_types' );
-			$post_type  = get_post_type();
-			global $post;
+			$post_type  = get_post_type( $post_id );
+
 			if ( $post_type && is_array( $post_types ) ) {
 				return array_key_exists( $post_type, $post_types );
 			}
