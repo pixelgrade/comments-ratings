@@ -246,7 +246,11 @@ class PixReviewsPlugin {
 		$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
 
 		if ( ! empty( $rating ) ) {
-			$comment = '<div class="review_rate" data-score="' . $rating . '"></div>' . $comment;
+			$comment = '<div itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" class="review_rate" data-score="' . $rating . '">
+			<meta itemprop="worstRating" content = "1">
+			<meta itemprop="ratingValue" content = "'. $rating .'" >
+			<meta itemprop="bestRating" content = "5" >
+			</div>' . $comment;
 		}
 
 		if ( ! empty( $pixrating_title ) ) {
