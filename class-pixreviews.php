@@ -15,7 +15,7 @@ class PixReviewsPlugin {
 	 * @since   1.0.0
 	 * @const   string
 	 */
-	protected $version = '1.1.0';
+	protected $version = '1.1.1';
 	/**
 	 * Unique identifier for your plugin.
 	 * Use this value (not the variable name) as the text domain when internationalizing strings of text. It should
@@ -163,7 +163,7 @@ class PixReviewsPlugin {
 			wp_localize_script( $this->plugin_slug . '-admin-script', 'locals', array(
 				'ajax_url' => admin_url( 'admin-ajax.php' )
 			) );
-		} elseif ( $hook_suffix === 'comment.php' ) {
+		} elseif ( 'comment.php' === $hook_suffix || 'edit-comments.php' === $hook_suffix ) {
 			wp_enqueue_script( 'jquery-raty', $this->plugin_baseurl . 'js/jquery.raty.js', array( 'jquery' ), $this->version, true );
 			wp_enqueue_style( 'jquery-raty-style', $this->plugin_baseurl . 'css/jquery.raty.css', array(), $this->version, false );
 			wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js', array( 'jquery-raty' ), $this->version, true );
@@ -219,40 +219,49 @@ class PixReviewsPlugin {
 	}
 
 	function save_comment( $commentID ) {
+		//some sanity check
+		if ( ! is_numeric( $commentID ) ) {
+			return;
+		}
 
+		//bail if shouldn't show ratings for the current post
 		if ( ! $this->is_visible_on_this_post() ) {
 			return;
 		}
 
-		// Save rating against comment
-		if ( isset( $_POST['score'] ) && is_numeric( $_POST['score'] ) ) {
-			update_comment_meta( $commentID, 'pixrating', $_POST['score'], true );
+		// Save the rating
+		if ( isset( $_POST['pixrating'] ) && is_numeric( $_POST['pixrating'] ) ) {
+			update_comment_meta( $commentID, 'pixrating', $_POST['pixrating'], true );
 		}
 
+		//Save the rating title
 		if ( isset( $_POST['pixrating_title'] ) && is_string( $_POST['pixrating_title'] ) ) {
 			update_comment_meta( $commentID, 'pixrating_title', sanitize_text_field( $_POST['pixrating_title'] ), true );
 		}
 	}
 
 	function display_rating( $comment ) {
-		global $post;
-
+		//bail if shouldn't show ratings for the current post
 		if ( ! $this->is_visible_on_this_post() ) {
 			return $comment;
 		}
 
-		$commentID       = get_comment_ID();
-		$rating          = get_comment_meta( $commentID, 'pixrating', true );
-		$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
-
-		if ( ! empty( $rating ) ) {
-			$comment = '<div itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" class="review_rate" data-score="' . $rating . '">
-			<meta itemprop="worstRating" content = "1">
-			<meta itemprop="ratingValue" content = "'. $rating .'" >
-			<meta itemprop="bestRating" content = "5" >
-			</div>' . $comment;
+		//bail if we don't have a valid current comment ID
+		if ( ! get_comment_ID() ) {
+			return $comment;
 		}
 
+		//get the rating
+		$rating          = get_comment_meta( get_comment_ID(), 'pixrating', true );
+		//get the rating title
+		$pixrating_title = get_comment_meta( get_comment_ID(), 'pixrating_title', true );
+
+		//add the rating stars to the comment
+		if ( ! empty( $rating ) ) {
+			$comment = '<div class="review_rate" data-pixrating="' . $rating . '"></div>' . $comment;
+		}
+
+		//add the rating title
 		if ( ! empty( $pixrating_title ) ) {
 			$comment = '<h3 class="pixrating_title">' . $pixrating_title . '</h3>' . $comment;
 		}
@@ -261,35 +270,26 @@ class PixReviewsPlugin {
 	}
 
 	function output_review_fields() {
-		global $post;
-
+		//bail if shouldn't show ratings for the current post
 		if ( ! $this->is_visible_on_this_post() ) {
 			return;
-		}
+		} ?>
 
-		global $comment;
-		$pixrating_title = '';
-		if ( ! empty( $comment ) ) {
-			$commentID       = get_comment_ID();
-			$pixrating_title = get_comment_meta( $commentID, 'pixrating_title', true );
-		}
-
-
-		$title_label       = $this->get_plugin_option( 'review_title_label' );
-		$title_placeholder = $this->get_plugin_option( 'review_title_placeholder' ); ?>
 		<div id="add_comment_rating_wrap">
 			<label for="add_post_rating"><?php echo $this->get_plugin_option( 'review_rating_label' ); ?></label>
 
-			<div id="add_post_rating" data-score="<?php esc_attr_e( $this->get_plugin_option( 'default_rating' ) ); ?>" data-assets_path="<?php esc_attr_e(  $this->plugin_baseurl . '/images' ); ?>"></div>
+			<div id="add_post_rating" data-pixrating="<?php echo esc_attr( $this->get_plugin_option( 'default_rating' ) ); ?>" data-assets_path="<?php echo esc_attr(  $this->plugin_baseurl . '/images' ); ?>"></div>
 		</div>
 		<p class="review-title-form">
 			<label for="pixrating_title"><?php echo $this->get_plugin_option( 'review_title_label' ); ?></label>
-			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr_e( $pixrating_title ) ?>" placeholder="<?php esc_attr_e( $title_placeholder ) ?>" size='25'/>
+			<input type='text' id='pixrating_title' name='pixrating_title' value="" placeholder="<?php echo esc_attr( $this->get_plugin_option( 'review_title_placeholder' ) ) ?>" size='25'/>
 		</p>
+
 		<?php
 	}
 
 	function filter_comment_form( $html ) {
+		//bail if shouldn't show ratings for the current post
 		if ( ! $this->is_visible_on_this_post() ) {
 			return $html;
 		}
@@ -300,6 +300,7 @@ class PixReviewsPlugin {
 	}
 
 	function filter_submit_comment_button( $args ) {
+		//bail if shouldn't show ratings for the current post
 		if ( ! $this->is_visible_on_this_post() ) {
 			return $args;
 		}
@@ -316,8 +317,7 @@ class PixReviewsPlugin {
 	function save_comment_backend( $location, $comment_id ) {
 		// Not allowed, return regular value without updating meta
 		if ( ! wp_verify_nonce( $_POST['noncename_wpse_82317'], plugin_basename( __FILE__ ) )
-		     && ! isset( $_POST['pixrating_title'] )
-		) {
+		     && ! isset( $_POST['pixrating_title'] ) && ! isset( $_POST['pixrating'] ) ) {
 			return $location;
 		}
 
@@ -327,6 +327,11 @@ class PixReviewsPlugin {
 			'pixrating_title',
 			sanitize_text_field( $_POST['pixrating_title'] )
 		);
+
+		// Save rating to the comment if we actually have a numeric value here - just to stay safe
+		if ( intval( $_POST['pixrating'] ) ) {
+			update_comment_meta( $comment_id, 'pixrating', intval( $_POST['pixrating'] ) );
+		}
 
 		// Return regular value after updating
 		return $location;
@@ -349,33 +354,41 @@ class PixReviewsPlugin {
 	 * Render meta box with Custom Field
 	 */
 	function inner_custom_backend_box( $comment ) {
+		//some sanity check
+		if ( empty( $comment ) ) {
+			return;
+		}
+
 		// Use nonce for verification
 		wp_nonce_field( plugin_basename( __FILE__ ), 'noncename_wpse_82317' );
 
 		$pixrating_title = get_comment_meta( $comment->comment_ID, 'pixrating_title', true );
 		$current_rating  = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
+
 		<fieldset>
 			<label for="pixrating_title"><?php _e( 'Review Title', 'pixreviews_txtd' ); ?></label>
-			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php esc_attr( $pixrating_title ) ?>" size='25'/>
+			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php echo esc_attr( $pixrating_title ) ?>" size='25'/>
 		</fieldset>
+
 		<?php // if there is a value, display it
 		$data = '';
-		if ( ! empty( $rating ) ) {
-			$data .= 'data-score="' . $current_rating . '"';
+		if ( ! empty( $current_rating ) ) {
+			$data .= 'data-pixrating="' . $current_rating . '"';
 		} ?>
+
 		<fieldset id="add_comment_rating_wrap">
 			<?php ?>
 			<label for="add_post_rating"><?php _e( 'Rating:', 'pixreviews_txtd' ) ?></label>
 
 			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
 		</fieldset>
+
 	<?php }
 
 	function get_average_rating( $post_id = null, $decimals = 2 ) {
 
 		if ( empty( $post_id ) ) {
-			global $post;
-			$post_id = $post->ID;
+			$post_id = get_the_ID();
 		}
 
 		$comments = get_comments( array(
@@ -397,14 +410,18 @@ class PixReviewsPlugin {
 		return number_format( $average, $decimals );
 	}
 
-	function is_visible_on_this_post() {
+	function is_visible_on_this_post( $post_id = null) {
 		$is_selective = $this->get_plugin_option( 'enable_selective_ratings' );
-		global $post;
-		$post_id = 0;
 
-		if ( isset( $post->ID ) ) {
-			$post_id = $post->ID;
+		if ( empty( $post_id ) ) {
+			$post_id = get_the_ID();
 		}
+
+		//if by some chance we fail to get a valid post ID then just return the default value - true
+		if ( empty( $post_id) ) {
+			return true;
+		}
+
 		if ( $is_selective ) {
 			$post_types = $this->get_plugin_option( 'display_on_post_types' );
 			$post_type  = get_post_type( $post_id );
