@@ -9,7 +9,7 @@
 * @wordpress-plugin
 Plugin Name: Comments Ratings
 Plugin URI:  http://pixelgrade.com
-Description: A Theme Customizer Booster
+Description: Easily add a rating system to your comments area and start displaying reviews from your visitors.
 Version: 1.1.0
 Author: PixelGrade
 Author URI: http://pixelgrade.com
