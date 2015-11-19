@@ -394,6 +394,7 @@ class PixReviewsPlugin {
 		$comments = get_comments( array(
 			'post_id'  => $post_id,
 			'meta_key' => 'pixrating',
+			'status'   => 'approve'
 		) );
 
 		if ( empty( $comments ) ) {
