@@ -2,11 +2,11 @@
 
 $general_settings = array(
 	'type'    => 'postbox',
-	'label'   => 'General Settings',
+	'label'   => esc_html__('General Settings', 'comments-ratings'),
 	'options' => array(
 
 		'enable_selective_ratings' => array(
-			'label'      => __( 'Select which post types should have ratings?', 'pixcustomify_txtd' ),
+			'label'      => esc_html__( 'Select which post types should have ratings?', 'comments-ratings' ),
 			'default'    => false,
 			'type'       => 'switch',
 			'show_group' => 'post_types_group'
@@ -15,7 +15,7 @@ $general_settings = array(
 			'type'    => 'group',
 			'options' => array(
 				'display_on_post_types' => array(
-					'label'       => __( 'Post Types', 'pixfields_txtd' ),
+					'label'       => esc_html__( 'Post Types', 'comments-ratings' ),
 					'default'     => array( 'post' => 'on', 'page' => 'on' ),
 					'type'        => 'post_types_checkbox',
 					'description' => 'Which post types should have comments with ratings'
@@ -23,7 +23,7 @@ $general_settings = array(
 			)
 		),
 		'default_rating'           => array(
-			'label'   => __( 'Select which post types should have ratings?', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Select which post types should have ratings?', 'comments-ratings' ),
 			'type'    => 'select',
 			'default' => '4',
 			'options' => array(

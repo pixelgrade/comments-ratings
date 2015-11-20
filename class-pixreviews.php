@@ -64,16 +64,10 @@ class PixReviewsPlugin {
 		$this->plugin_baseurl  = self::get_base_url();
 		self::$config          = self::get_config();
 		self::$plugin_settings = get_option( 'pixreviews_settings' );
-		self::$default_ratings = array(
-			__( 'Terrible', 'pixreviews_txtd' ),
-			__( 'Poor', 'pixreviews_txtd' ),
-			__( 'Average', 'pixreviews_txtd' ),
-			__( 'Very Good', 'pixreviews_txtd' ),
-			__( 'Exceptional', 'pixreviews_txtd' ),
-		);
+
 
 		// Load plugin text domain
-		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+		add_action( 'init', array( $this, 'load_plugin_textdomain' ), 5 );
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		// Add an action link pointing to the options page.
@@ -99,6 +93,7 @@ class PixReviewsPlugin {
 		// now the admin part
 		add_filter( 'comment_edit_redirect', array( $this, 'save_comment_backend' ), 10, 2 );
 		add_action( 'add_meta_boxes', array( $this, 'add_custom_backend_box' ) );
+
 	}
 
 	/**
@@ -148,6 +143,18 @@ class PixReviewsPlugin {
 		load_plugin_textdomain( $domain, false, basename( dirname( __FILE__ ) ) . '/lang/' );
 	}
 
+	protected function set_rating_values() {
+		$ratings = array(
+				esc_html__( 'Terrible', 'comments-ratings' ),
+				esc_html__( 'Poor', 'comments-ratings' ),
+				esc_html__( 'Average', 'comments-ratings' ),
+				esc_html__( 'Very Good', 'comments-ratings' ),
+				esc_html__( 'Exceptional', 'comments-ratings' ),
+		);
+
+		return $ratings;
+	}
+
 	/**
 	 * Settings page scripts
 	 */
@@ -169,7 +176,7 @@ class PixReviewsPlugin {
 			wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js', array( 'jquery-raty' ), $this->version, true );
 
 			wp_localize_script( 'reviews-scripts', 'pixreviews', array(
-					'hints' => self::$default_ratings
+					'hints' => $this->set_rating_values(),
 				)
 			);
 		}
@@ -189,7 +196,7 @@ class PixReviewsPlugin {
 		wp_enqueue_script( 'reviews-scripts', $this->plugin_baseurl . 'js/reviews.js', array( 'jquery-raty' ), $this->version, true );
 
 		wp_localize_script( 'reviews-scripts', 'pixreviews', array(
-				'hints' => self::$default_ratings
+				'hints' => $this->set_rating_values(),
 			)
 		);
 	}
@@ -198,7 +205,7 @@ class PixReviewsPlugin {
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 */
 	function add_plugin_admin_menu() {
-		$this->plugin_screen_hook_suffix = add_options_page( __( 'Comments Ratings', 'pixreviews_txtd' ), __( 'Comments Ratings', 'pixreviews_txtd' ), 'edit_plugins', $this->plugin_slug, array(
+		$this->plugin_screen_hook_suffix = add_options_page( esc_html__( 'Comments Ratings', 'comments-ratings' ), esc_html__( 'Comments Ratings', 'comments-ratings' ), 'edit_plugins', $this->plugin_slug, array(
 			$this,
 			'display_plugin_admin_page'
 		) );
@@ -215,7 +222,7 @@ class PixReviewsPlugin {
 	 * Add settings action link to the plugins page.
 	 */
 	function add_action_links( $links ) {
-		return array_merge( array( 'settings' => '<a href="' . admin_url( 'options-general.php?page=pixreviews' ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>' ), $links );
+		return array_merge( array( 'settings' => '<a href="' . admin_url( 'options-general.php?page=pixreviews' ) . '">' . esc_html__( 'Settings', $this->plugin_slug ) . '</a>' ), $links );
 	}
 
 	function save_comment( $commentID ) {
@@ -343,7 +350,7 @@ class PixReviewsPlugin {
 	function add_custom_backend_box() {
 		add_meta_box(
 			'section_id_wpse_82317',
-			__( 'Review Fields', 'pixreviews_txtd' ),
+			esc_html__( 'Review Fields', 'comments-ratings' ),
 			array( $this, 'inner_custom_backend_box' ),
 			'comment',
 			'normal'
@@ -366,7 +373,7 @@ class PixReviewsPlugin {
 		$current_rating  = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
 
 		<fieldset>
-			<label for="pixrating_title"><?php _e( 'Review Title', 'pixreviews_txtd' ); ?></label>
+			<label for="pixrating_title"><?php _e( 'Review Title', 'comments-ratings' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php echo esc_attr( $pixrating_title ) ?>" size='25'/>
 		</fieldset>
 
@@ -378,7 +385,7 @@ class PixReviewsPlugin {
 
 		<fieldset id="add_comment_rating_wrap">
 			<?php ?>
-			<label for="add_post_rating"><?php _e( 'Rating:', 'pixreviews_txtd' ) ?></label>
+			<label for="add_post_rating"><?php _e( 'Rating:', 'comments-ratings' ) ?></label>
 
 			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
 		</fieldset>

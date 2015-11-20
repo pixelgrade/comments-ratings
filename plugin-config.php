@@ -12,7 +12,7 @@ $debug = true;
 return array(
 	'plugin-name'     => 'pixreviews',
 	'settings-key'    => 'pixreviews_settings',
-	'textdomain'      => 'pixreviews_txtd',
+	'textdomain'      => 'comments-ratings',
 	'template-paths'  => array(
 		$basepath . 'core/views/form-partials/',
 		$basepath . 'views/form-partials/',
@@ -39,7 +39,7 @@ return array(
 		'counter' => array( 'is_numeric', 'not_empty' ),
 	),
 	'errors'          => array(
-		'not_empty' => __( 'Invalid Value.', pixreviews::textdomain() ),
+		'not_empty' => esc_html__( 'Invalid Value.', pixreviews::textdomain() ),
 	),
 //	'callbacks'             => array(
 //		'save_settings' => 'save_customizer_plugin_settings'

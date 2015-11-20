@@ -191,7 +191,7 @@ class pixreviews {
 	}
 
 	/** @var string the translation text domain */
-	protected static $textdomain = 'pixreviews_txtd';
+	protected static $textdomain = 'comments-ratings';
 
 	/**
 	 * @return string text domain
@@ -210,7 +210,7 @@ class pixreviews {
 		}
 		else { // null or otherwise empty value
 			// revert to default
-			self::$textdomain = 'pixreviews_txtd';
+			self::$textdomain = 'comments-ratings';
 		}
 	}
 

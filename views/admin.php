@@ -23,22 +23,22 @@ $errors    = $processor->errors(); ?>
 
 	<div id="icon-options-general" class="icon32"><br></div>
 
-	<h2><?php _e( 'Comments Ratings', 'pixreviews_txtd' ); ?></h2>
+	<h2><?php _e( 'Comments Ratings', 'comments-ratings' ); ?></h2>
 
 	<?php if ( $processor->ok() ): ?>
 
 		<?php if ( ! empty( $errors ) ): ?>
 			<br/>
 			<p class="update-nag">
-				<strong><?php _e( 'Unable to save settings.', 'pixreviews_txtd' ); ?></strong>
-				<?php _e( 'Please check the fields for errors and typos.', 'pixreviews_txtd' ); ?>
+				<strong><?php _e( 'Unable to save settings.', 'comments-ratings' ); ?></strong>
+				<?php _e( 'Please check the fields for errors and typos.', 'comments-ratings' ); ?>
 			</p>
 		<?php endif;
 
 		if ( $processor->performed_update() ): ?>
 			<br/>
 			<p class="update-nag">
-				<?php _e( 'Settings have been updated.', 'pixreviews_txtd' ); ?>
+				<?php _e( 'Settings have been updated.', 'comments-ratings' ); ?>
 			</p>
 		<?php endif;
 		echo $f = pixreviews::form( $config, $processor );
@@ -46,7 +46,7 @@ $errors    = $processor->errors(); ?>
 		echo $f->field( 'labels' )->render();
 		echo $f->field( 'general' )->render(); ?>
 		<button type="submit" class="button button-primary">
-			<?php _e( 'Save Changes', 'pixreviews_txtd' ); ?>
+			<?php _e( 'Save Changes', 'comments-ratings' ); ?>
 		</button>
 
 		<?php echo $f->endform();

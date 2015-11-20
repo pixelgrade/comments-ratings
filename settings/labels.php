@@ -2,41 +2,41 @@
 
 $labels_settings = array(
 	'type'    => 'postbox',
-	'label'   => __( 'Labels', 'pixcustomify_txtd' ),
+	'label'   => esc_html__( 'Labels', 'comments-ratings' ),
 	'options' => array(
 		'review_rating_label'      => array(
-			'label'   => __( 'Review Rating Label: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Your overall rating of this listing:', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Rating Label: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Your overall rating of this listing:', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),
 		'review_title_label'       => array(
-			'label'   => __( 'Review Title Label: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Title of your review', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Title Label: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Title of your review', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),
 		'review_title_placeholder' => array(
-			'label'   => __( 'Review Title Placeholder: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Summarize your opinion or highlight an interesting detail', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Title Placeholder: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Summarize your opinion or highlight an interesting detail', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),
 		'review_label'             => array(
-			'label'   => __( 'Review Label: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Your Review', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Label: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Your Review', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),
 		'review_placeholder'       => array(
-			'label'   => __( 'Review Placeholder: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Tell about your experience or leave a tip for others', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Placeholder: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Tell about your experience or leave a tip for others', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),
 		'review_submit_button'     => array(
-			'label'   => __( 'Review Submit Button: ', 'pixcustomify_txtd' ),
-			'default' => __( 'Submit your Review', 'pixcustomify_txtd' ),
+			'label'   => esc_html__( 'Review Submit Button: ', 'comments-ratings' ),
+			'default' => esc_html__( 'Submit your Review', 'comments-ratings' ),
 			'type'    => 'text',
 			'size'    => "80"
 		),

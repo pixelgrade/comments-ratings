@@ -14,7 +14,7 @@ Version: 1.1.1
 Author: PixelGrade
 Author URI: https://pixelgrade.com
 Author Email: contact@pixelgrade.com
-Text Domain: pixreviews_txtd
+Text Domain: comments-ratings
 License:     GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 Domain Path: /lang
