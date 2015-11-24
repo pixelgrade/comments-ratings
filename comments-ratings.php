@@ -10,7 +10,7 @@
 Plugin Name: Comments Ratings
 Plugin URI:  https://wordpress.org/plugins/comments-ratings/
 Description: Easily transform your comments into reviews.
-Version: 1.1.1
+Version: 1.1.2
 Author: PixelGrade
 Author URI: https://pixelgrade.com
 Author Email: contact@pixelgrade.com

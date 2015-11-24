@@ -15,7 +15,7 @@ class PixReviewsPlugin {
 	 * @since   1.0.0
 	 * @const   string
 	 */
-	protected $version = '1.1.1';
+	protected $version = '1.1.2';
 	/**
 	 * Unique identifier for your plugin.
 	 * Use this value (not the variable name) as the text domain when internationalizing strings of text. It should
@@ -145,11 +145,11 @@ class PixReviewsPlugin {
 
 	protected function set_rating_values() {
 		$ratings = array(
-				esc_html__( 'Terrible', 'comments-ratings' ),
-				esc_html__( 'Poor', 'comments-ratings' ),
-				esc_html__( 'Average', 'comments-ratings' ),
-				esc_html__( 'Very Good', 'comments-ratings' ),
-				esc_html__( 'Exceptional', 'comments-ratings' ),
+			esc_html__( 'Terrible', 'comments-ratings' ),
+			esc_html__( 'Poor', 'comments-ratings' ),
+			esc_html__( 'Average', 'comments-ratings' ),
+			esc_html__( 'Very Good', 'comments-ratings' ),
+			esc_html__( 'Exceptional', 'comments-ratings' ),
 		);
 
 		return $ratings;
