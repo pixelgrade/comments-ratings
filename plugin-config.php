@@ -39,7 +39,7 @@ return array(
 		'counter' => array( 'is_numeric', 'not_empty' ),
 	),
 	'errors'          => array(
-		'not_empty' => esc_html__( 'Invalid Value.', pixreviews::textdomain() ),
+		'not_empty' => esc_html__( 'Invalid Value.', 'comments-ratings' ),
 	),
 //	'callbacks'             => array(
 //		'save_settings' => 'save_customizer_plugin_settings'
