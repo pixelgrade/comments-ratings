@@ -66,5 +66,8 @@ require_once( plugin_dir_path( __FILE__ ) . 'class-pixreviews.php' );
 register_activation_hook( __FILE__, array( 'PixReviewsPlugin', 'activate' ) );
 //register_deactivation_hook( __FILE__, array( 'pixreviewsPlugin', 'deactivate' ) );
 
-global $pixreviews_plugin;
-$pixreviews_plugin = PixReviewsPlugin::get_instance();
+function pixreviews_init_plugin() {
+	global $pixreviews_plugin;
+	$pixreviews_plugin = PixReviewsPlugin::get_instance();
+}
+add_action( 'init', 'pixreviews_init_plugin' );

@@ -205,7 +205,7 @@ class PixReviewsPlugin {
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 */
 	function add_plugin_admin_menu() {
-		$this->plugin_screen_hook_suffix = add_options_page( esc_html__( 'Comments Ratings', 'comments-ratings' ), esc_html__( 'Comments Ratings', 'comments-ratings' ), 'edit_plugins', $this->plugin_slug, array(
+		$this->plugin_screen_hook_suffix = add_options_page( esc_html__( 'Comments Ratings', 'comments-ratings' ), esc_html__( 'Comments Ratings', 'comments-ratings' ), 'edit_plugins', 'comments-ratings', array(
 			$this,
 			'display_plugin_admin_page'
 		) );
@@ -222,7 +222,7 @@ class PixReviewsPlugin {
 	 * Add settings action link to the plugins page.
 	 */
 	function add_action_links( $links ) {
-		return array_merge( array( 'settings' => '<a href="' . admin_url( 'options-general.php?page=pixreviews' ) . '">' . esc_html__( 'Settings', $this->plugin_slug ) . '</a>' ), $links );
+		return array_merge( array( 'settings' => '<a href="' . admin_url( 'options-general.php?page=pixreviews' ) . '">' . esc_html__( 'Settings', 'comments-ratings' ) . '</a>' ), $links );
 	}
 
 	function save_comment( $commentID ) {
