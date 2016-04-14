@@ -67,7 +67,7 @@ class PixReviewsPlugin {
 
 
 		// Load plugin text domain
-		add_action( 'init', array( $this, 'load_plugin_textdomain' ), 5 );
+
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		// Add an action link pointing to the options page.
@@ -129,20 +129,7 @@ class PixReviewsPlugin {
 	static function deactivate( $network_wide ) {
 		// TODO: Define deactivation functionality here
 	}
-
-	/**
-	 * Load the plugin text domain for translation.
-	 * @since    1.0.0
-	 */
-	function load_plugin_textdomain() {
-
-		$domain = $this->plugin_slug;
-		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-
-		load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $domain, false, basename( dirname( __FILE__ ) ) . '/lang/' );
-	}
-
+	
 	protected function set_rating_values() {
 		$ratings = array(
 			esc_html__( 'Terrible', 'comments-ratings' ),

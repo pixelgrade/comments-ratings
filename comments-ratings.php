@@ -35,7 +35,7 @@ require 'core/bootstrap'.EXT;
 $config = include 'plugin-config'.EXT;
 
 // set textdomain
-pixreviews::settextdomain($config['textdomain']);
+load_plugin_textdomain( 'comments-ratings', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 
 // Ensure Test Data
 // ----------------
@@ -70,4 +70,4 @@ function pixreviews_init_plugin() {
 	global $pixreviews_plugin;
 	$pixreviews_plugin = PixReviewsPlugin::get_instance();
 }
-add_action( 'init', 'pixreviews_init_plugin' );
+add_action( 'after_setup_theme', 'pixreviews_init_plugin' );
