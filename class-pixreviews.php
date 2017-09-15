@@ -192,7 +192,7 @@ class PixReviewsPlugin {
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 */
 	function add_plugin_admin_menu() {
-		$this->plugin_screen_hook_suffix = add_options_page( esc_html__( 'Comments Ratings', 'comments-ratings' ), esc_html__( 'Comments Ratings', 'comments-ratings' ), 'edit_plugins', 'comments-ratings', array(
+		$this->plugin_screen_hook_suffix = add_options_page( esc_html__( 'Comments Ratings', 'comments-ratings' ), esc_html__( 'Comments Ratings', 'comments-ratings' ), 'manage_options', 'comments-ratings', array(
 			$this,
 			'display_plugin_admin_page'
 		) );
