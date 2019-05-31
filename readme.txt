@@ -3,7 +3,7 @@ Contributors: pixelgrade, euthelup, babbardel, vlad.olaru, raduconstantin
 Tags: comments, rating, reviews
 Requires at least: 4.9.0
 Tested up to: 5.2.0
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,8 +15,11 @@ Easily add a rating system to your comments area and start displaying reviews fr
 
 == Changelog ==
 
-= 1.1.5 =
+= 1.1.6 =
 * We did several compatibility checks with the latest WordPress releases, so that everything will be working as smoothly as always.
+
+= 1.1.5 =
+* Fixed: the textdomain loading
 
 = 1.1.4 =
 * Improved: compatibility with WPML and other translations plugins
