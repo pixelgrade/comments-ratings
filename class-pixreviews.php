@@ -15,7 +15,7 @@ class PixReviewsPlugin {
 	 * @since   1.0.0
 	 * @const   string
 	 */
-	protected $version = '1.1.4';
+	protected $version = '1.1.5';
 	/**
 	 * Unique identifier for your plugin.
 	 * Use this value (not the variable name) as the text domain when internationalizing strings of text. It should
