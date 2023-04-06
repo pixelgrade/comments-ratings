@@ -103,6 +103,9 @@ class PixReviewsProcessorImpl implements PixReviewsProcessor {
 			}
 
 			if ($this->form_was_submitted()) {
+
+				check_admin_referer( 'comments-ratings-save-settings' );
+
 				$input = $this->cleanup_input($_POST);
 				$errors = $this->validate_input($input);
 
