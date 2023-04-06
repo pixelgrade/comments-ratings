@@ -1,17 +1,17 @@
 <?php
 /*
 * @package   Comments Ratings
-* @author    PixelGrade <contact@pixelgrade.com>
+* @author    Pixelgrade <contact@pixelgrade.com>
 * @license   GPL-2.0+
 * @link      https://pixelgrade.com
-* @copyright 2015 PixelGrade
+* @copyright 2015 Pixelgrade
 *
 * @wordpress-plugin
 Plugin Name: Comments Ratings
 Plugin URI:  https://wordpress.org/plugins/comments-ratings/
 Description: Easily transform your comments into reviews.
-Version: 1.1.6
-Author: PixelGrade
+Version: 1.1.7
+Author: Pixelgrade
 Author URI: https://pixelgrade.com
 Author Email: contact@pixelgrade.com
 Text Domain: comments-ratings

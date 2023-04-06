@@ -45,6 +45,9 @@ $errors    = $processor->errors(); ?>
 		echo $f->field( 'hiddens' )->render();
 		echo $f->field( 'labels' )->render();
 		echo $f->field( 'general' )->render(); ?>
+
+		<?php wp_nonce_field( 'comments-ratings-save-settings' ); ?>
+
 		<button type="submit" class="button button-primary">
 			<?php _e( 'Save Changes', 'comments-ratings' ); ?>
 		</button>
