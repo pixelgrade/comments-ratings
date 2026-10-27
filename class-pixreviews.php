@@ -226,12 +226,12 @@ class PixReviewsPlugin {
 
 		// Save the rating
 		if ( isset( $_POST['pixrating'] ) && is_numeric( $_POST['pixrating'] ) ) {
-			update_comment_meta( $commentID, 'pixrating', $_POST['pixrating'], true );
+			update_comment_meta( $commentID, 'pixrating', intval( $_POST['pixrating'] ), true );
 		}
 
 		//Save the rating title
 		if ( isset( $_POST['pixrating_title'] ) && is_string( $_POST['pixrating_title'] ) ) {
-			update_comment_meta( $commentID, 'pixrating_title', sanitize_text_field( $_POST['pixrating_title'] ), true );
+			update_comment_meta( $commentID, 'pixrating_title', sanitize_text_field( wp_unslash( $_POST['pixrating_title'] ) ), true );
 		}
 	}
 
@@ -253,12 +253,12 @@ class PixReviewsPlugin {
 
 		//add the rating stars to the comment
 		if ( ! empty( $rating ) ) {
-			$comment = '<div class="review_rate" data-pixrating="' . $rating . '"></div>' . $comment;
+			$comment = '<div class="review_rate" data-pixrating="' . esc_attr( $rating ) . '"></div>' . $comment;
 		}
 
 		//add the rating title
 		if ( ! empty( $pixrating_title ) ) {
-			$comment = '<h3 class="pixrating_title">' . $pixrating_title . '</h3>' . $comment;
+			$comment = '<h3 class="pixrating_title">' . esc_html( $pixrating_title ) . '</h3>' . $comment;
 		}
 
 		return $comment;
@@ -271,12 +271,12 @@ class PixReviewsPlugin {
 		} ?>
 
 		<div id="add_comment_rating_wrap">
-			<label for="add_post_rating"><?php echo $this->get_plugin_option( 'review_rating_label' ); ?></label>
+			<label for="add_post_rating"><?php echo wp_kses_post( $this->get_plugin_option( 'review_rating_label' ) ); ?></label>
 
 			<div id="add_post_rating" data-pixrating="<?php echo esc_attr( $this->get_plugin_option( 'default_rating' ) ); ?>" data-assets_path="<?php echo esc_attr(  $this->plugin_baseurl . '/images' ); ?>"></div>
 		</div>
 		<p class="review-title-form">
-			<label for="pixrating_title"><?php echo $this->get_plugin_option( 'review_title_label' ); ?></label>
+			<label for="pixrating_title"><?php echo wp_kses_post( $this->get_plugin_option( 'review_title_label' ) ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="" placeholder="<?php echo esc_attr( $this->get_plugin_option( 'review_title_placeholder' ) ) ?>" size='25'/>
 		</p>
 
@@ -291,7 +291,7 @@ class PixReviewsPlugin {
 		$label              = $this->get_plugin_option( 'review_label' );
 		$review_placeholder = $this->get_plugin_option( 'review_placeholder' );
 
-		return '<p class="comment-form-comment"><label for="comment">' . $label . '</label> <textarea id="comment" name="comment" cols="45" rows="8"  aria-required="true" required="required" placeholder="' . $review_placeholder . '"></textarea></p>';
+		return '<p class="comment-form-comment"><label for="comment">' . wp_kses_post( $label ) . '</label> <textarea id="comment" name="comment" cols="45" rows="8"  aria-required="true" required="required" placeholder="' . esc_attr( $review_placeholder ) . '"></textarea></p>';
 	}
 
 	function filter_submit_comment_button( $args ) {
@@ -311,20 +311,23 @@ class PixReviewsPlugin {
 	 */
 	function save_comment_backend( $location, $comment_id ) {
 		// Not allowed, return regular value without updating meta
-		if ( ! wp_verify_nonce( $_POST['noncename_wpse_82317'], plugin_basename( __FILE__ ) )
-		     && ! isset( $_POST['pixrating_title'] ) && ! isset( $_POST['pixrating'] ) ) {
+		if ( ! isset( $_POST['noncename_wpse_82317'] )
+		     || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['noncename_wpse_82317'] ) ), plugin_basename( __FILE__ ) )
+		     || ! current_user_can( 'edit_comment', $comment_id ) ) {
 			return $location;
 		}
 
 		// Update meta
-		update_comment_meta(
-			$comment_id,
-			'pixrating_title',
-			sanitize_text_field( $_POST['pixrating_title'] )
-		);
+		if ( isset( $_POST['pixrating_title'] ) && is_string( $_POST['pixrating_title'] ) ) {
+			update_comment_meta(
+				$comment_id,
+				'pixrating_title',
+				sanitize_text_field( wp_unslash( $_POST['pixrating_title'] ) )
+			);
+		}
 
 		// Save rating to the comment if we actually have a numeric value here - just to stay safe
-		if ( intval( $_POST['pixrating'] ) ) {
+		if ( isset( $_POST['pixrating'] ) && intval( $_POST['pixrating'] ) ) {
 			update_comment_meta( $comment_id, 'pixrating', intval( $_POST['pixrating'] ) );
 		}
 
@@ -368,14 +371,14 @@ class PixReviewsPlugin {
 		<?php // if there is a value, display it
 		$data = '';
 		if ( ! empty( $current_rating ) ) {
-			$data .= 'data-pixrating="' . $current_rating . '"';
+			$data .= 'data-pixrating="' . esc_attr( $current_rating ) . '"';
 		} ?>
 
 		<fieldset id="add_comment_rating_wrap">
 			<?php ?>
 			<label for="add_post_rating"><?php _e( 'Rating:', 'comments-ratings' ) ?></label>
 
-			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo $this->plugin_baseurl . '/images'; ?>"></div>
+			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo esc_url( $this->plugin_baseurl . '/images' ); ?>"></div>
 		</fieldset>
 
 	<?php }

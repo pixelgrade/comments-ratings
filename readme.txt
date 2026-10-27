@@ -3,7 +3,7 @@ Contributors: pixelgrade, babbardel, vlad.olaru, raduconstantin
 Tags: comments, rating, reviews
 Requires at least: 4.9.0
 Tested up to: 5.9.0
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,10 @@ Convert comments into reviews for your visitors.
 Easily add a rating system to your comments area and start displaying reviews from your visitors.
 
 == Changelog ==
+
+= 1.1.8 =
+* Security fix: check permissions when saving review fields from the comment editor.
+* Security fix: escape review titles, ratings and labels on output.
 
 = 1.1.7 =
 * Security fix.
