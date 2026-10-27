@@ -29,8 +29,8 @@ $attrs = array(
 			unset($attrs['checked']);
 		} ?>
 		<fieldset class="multicheckbox_option">
-			<input <?php echo $field->htmlattributes( $attrs ) ?>>
-			<label id="<?php echo $value ?>"><?php echo $label ?></label>
+			<input <?php echo $field->htmlattributes( $attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?>>
+			<label id="<?php echo esc_attr( $value ) ?>"><?php echo esc_html( $label ) ?></label>
 		</fieldset>
 	<?php } ?>
 </div>

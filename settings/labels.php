@@ -1,5 +1,10 @@
 <?php
 
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $labels_settings = array(
 	'type'    => 'postbox',
 	'label'   => esc_html__( 'Labels', 'comments-ratings' ),

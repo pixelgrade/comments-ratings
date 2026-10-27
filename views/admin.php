@@ -1,4 +1,9 @@
 <?php
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Represents the view for the administration dashboard.
  *
@@ -23,42 +28,43 @@ $errors    = $processor->errors(); ?>
 
 	<div id="icon-options-general" class="icon32"><br></div>
 
-	<h2><?php _e( 'Comments Ratings', 'comments-ratings' ); ?></h2>
+	<h2><?php esc_html_e( 'Comments Ratings', 'comments-ratings' ); ?></h2>
 
 	<?php if ( $processor->ok() ): ?>
 
 		<?php if ( ! empty( $errors ) ): ?>
 			<br/>
 			<p class="update-nag">
-				<strong><?php _e( 'Unable to save settings.', 'comments-ratings' ); ?></strong>
-				<?php _e( 'Please check the fields for errors and typos.', 'comments-ratings' ); ?>
+				<strong><?php esc_html_e( 'Unable to save settings.', 'comments-ratings' ); ?></strong>
+				<?php esc_html_e( 'Please check the fields for errors and typos.', 'comments-ratings' ); ?>
 			</p>
 		<?php endif;
 
 		if ( $processor->performed_update() ): ?>
 			<br/>
 			<p class="update-nag">
-				<?php _e( 'Settings have been updated.', 'comments-ratings' ); ?>
+				<?php esc_html_e( 'Settings have been updated.', 'comments-ratings' ); ?>
 			</p>
 		<?php endif;
-		echo $f = pixreviews::form( $config, $processor );
-		echo $f->field( 'hiddens' )->render();
-		echo $f->field( 'labels' )->render();
-		echo $f->field( 'general' )->render(); ?>
+		$f = pixreviews::form( $config, $processor );
+		echo $f->startform(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes().
+		echo $f->field( 'hiddens' )->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field templates escape their own output.
+		echo $f->field( 'labels' )->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field templates escape their own output.
+		echo $f->field( 'general' )->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field templates escape their own output. ?>
 
 		<?php wp_nonce_field( 'comments-ratings-save-settings' ); ?>
 
 		<button type="submit" class="button button-primary">
-			<?php _e( 'Save Changes', 'comments-ratings' ); ?>
+			<?php esc_html_e( 'Save Changes', 'comments-ratings' ); ?>
 		</button>
 
-		<?php echo $f->endform();
+		<?php echo $f->endform(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static closing tag.
 
 	elseif ( $status['state'] == 'error' ): ?>
 
-		<h3>Critical Error</h3>
+		<h3><?php esc_html_e( 'Critical Error', 'comments-ratings' ); ?></h3>
 
-		<p><?php echo $status['message'] ?></p>
+		<p><?php echo esc_html( $status['message'] ); ?></p>
 
 	<?php endif; ?>
 </div>

@@ -106,7 +106,7 @@ class PixReviewsProcessorImpl implements PixReviewsProcessor {
 
 				check_admin_referer( 'comments-ratings-save-settings' );
 
-				$input = $this->cleanup_input($_POST);
+				$input = $this->cleanup_input( wp_unslash( $_POST ) );
 				$errors = $this->validate_input($input);
 
 				if (empty($errors)) {
@@ -210,7 +210,7 @@ class PixReviewsProcessorImpl implements PixReviewsProcessor {
 	 * @return boolean
 	 */
 	protected function form_was_submitted() {
-		return $_SERVER['REQUEST_METHOD'] === 'POST';
+		return isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'];
 	}
 
 	/**

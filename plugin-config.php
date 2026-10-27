@@ -2,13 +2,6 @@
 
 $basepath = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
 
-$debug = false;
-if ( isset( $_GET['debug'] ) && $_GET['debug'] == 'true' ) {
-	$debug = true;
-}
-
-$debug = true;
-
 return array(
 	'plugin-name'     => 'pixreviews',
 	'settings-key'    => 'pixreviews_settings',
@@ -45,7 +38,7 @@ return array(
 //		'save_settings' => 'save_customizer_plugin_settings'
 //	),
 	// shows exception traces on error
-	'debug'           => $debug,
+	'debug'           => false,
 	/**
 	 * DEFAULTS - The default plugin options
 	 */

@@ -1,4 +1,11 @@
-<?php return array(
+<?php
+
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+return array(
 
 	# Hidden fields
 	'settings_saved_once'      => '0',

@@ -19,4 +19,4 @@
 		);
 ?>
 
-<input <?php echo $field->htmlattributes($attrs) ?>/>
+<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?>/>

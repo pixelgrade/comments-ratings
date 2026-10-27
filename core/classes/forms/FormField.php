@@ -58,7 +58,7 @@ class PixReviewsFormFieldImpl extends PixReviewsHTMLElementImpl implements PixRe
 		$template_paths = array_reverse($form->getmeta('template-paths', array()));
 
 		if (empty($template_paths)) {
-			throw new Exception('Missing template paths.');
+			throw new Exception( esc_html__( 'Missing template paths.', 'comments-ratings' ) );
 		}
 
 		// the following are the file patterns we look for
@@ -79,7 +79,7 @@ class PixReviewsFormFieldImpl extends PixReviewsHTMLElementImpl implements PixRe
 			}
 		}
 
-		throw new Exception('Failed to match any pattern for field ['.$this->getmeta('name').'] of type '.$this->getmeta('type', '[unknown]'));
+		throw new Exception( 'Failed to match any pattern for field [' . esc_html( $this->getmeta( 'name' ) ) . '] of type ' . esc_html( $this->getmeta( 'type', '[unknown]' ) ) );
 	}
 
 	/**

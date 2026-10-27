@@ -23,19 +23,19 @@ if ( $field->hasmeta('size') ) {
 ?>
 
 <?php if ($rendering == 'inline'): ?>
-	<input <?php echo $field->htmlattributes($attrs) ?>/>
+	<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?>/>
 <?php elseif ($rendering == 'blocks'):  ?>
 <div class="text">
-	<label id="<?php echo $name ?>"><?php echo $label ?></label>
-	<input <?php echo $field->htmlattributes($attrs) ?> />
-	<span><?php echo $desc ?></span>
+	<label id="<?php echo esc_attr( $name ) ?>"><?php echo esc_html( $label ) ?></label>
+	<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> />
+	<span><?php echo esc_html( $desc ) ?></span>
 </div>
 <?php else: # ?>
 	<div>
-		<p><?php echo $desc ?></p>
-		<label id="<?php echo $name ?>">
-			<?php echo $label ?>
-			<input <?php echo $field->htmlattributes($attrs) ?>/>
+		<p><?php echo esc_html( $desc ) ?></p>
+		<label id="<?php echo esc_attr( $name ) ?>">
+			<?php echo esc_html( $label ) ?>
+			<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?>/>
 		</label>
 	</div>
 <?php endif; ?>
