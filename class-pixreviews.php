@@ -16,7 +16,7 @@ class PixReviewsPlugin {
 	 * @const   string
 	 */
 
-	protected $version = '1.1.6';
+	protected $version = '1.1.9';
 	/**
 	 * Unique identifier for your plugin.
 	 * Use this value (not the variable name) as the text domain when internationalizing strings of text. It should
@@ -154,7 +154,7 @@ class PixReviewsPlugin {
 
 		$screen = get_current_screen();
 		if ( $screen->id == $this->plugin_screen_hook_suffix ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ), $this->version );
+			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ), $this->version, false );
 			wp_localize_script( $this->plugin_slug . '-admin-script', 'locals', array(
 				'ajax_url' => admin_url( 'admin-ajax.php' )
 			) );
@@ -224,15 +224,39 @@ class PixReviewsPlugin {
 			return;
 		}
 
+		// This runs inside core's comment submission (comment_post), which carries no nonce for visitors.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 		// Save the rating
 		if ( isset( $_POST['pixrating'] ) && is_numeric( $_POST['pixrating'] ) ) {
-			update_comment_meta( $commentID, 'pixrating', intval( $_POST['pixrating'] ), true );
+			$rating = self::sanitize_rating( sanitize_text_field( wp_unslash( $_POST['pixrating'] ) ) );
+			if ( $rating ) {
+				update_comment_meta( $commentID, 'pixrating', $rating, true );
+			}
 		}
 
 		//Save the rating title
 		if ( isset( $_POST['pixrating_title'] ) && is_string( $_POST['pixrating_title'] ) ) {
 			update_comment_meta( $commentID, 'pixrating_title', sanitize_text_field( wp_unslash( $_POST['pixrating_title'] ) ), true );
 		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Keep a submitted rating within the 1-5 stars range.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return int The rating, or 0 when there is none.
+	 */
+	public static function sanitize_rating( $value ) {
+		$rating = intval( $value );
+		if ( $rating < 1 ) {
+			return 0;
+		}
+
+		return min( $rating, 5 );
 	}
 
 	function display_rating( $comment ) {
@@ -327,8 +351,11 @@ class PixReviewsPlugin {
 		}
 
 		// Save rating to the comment if we actually have a numeric value here - just to stay safe
-		if ( isset( $_POST['pixrating'] ) && intval( $_POST['pixrating'] ) ) {
-			update_comment_meta( $comment_id, 'pixrating', intval( $_POST['pixrating'] ) );
+		if ( isset( $_POST['pixrating'] ) ) {
+			$rating = self::sanitize_rating( sanitize_text_field( wp_unslash( $_POST['pixrating'] ) ) );
+			if ( $rating ) {
+				update_comment_meta( $comment_id, 'pixrating', $rating );
+			}
 		}
 
 		// Return regular value after updating
@@ -364,21 +391,15 @@ class PixReviewsPlugin {
 		$current_rating  = get_comment_meta( $comment->comment_ID, 'pixrating', true ); ?>
 
 		<fieldset>
-			<label for="pixrating_title"><?php _e( 'Review Title', 'comments-ratings' ); ?></label>
+			<label for="pixrating_title"><?php esc_html_e( 'Review Title', 'comments-ratings' ); ?></label>
 			<input type='text' id='pixrating_title' name='pixrating_title' value="<?php echo esc_attr( $pixrating_title ) ?>" size='25'/>
 		</fieldset>
 
-		<?php // if there is a value, display it
-		$data = '';
-		if ( ! empty( $current_rating ) ) {
-			$data .= 'data-pixrating="' . esc_attr( $current_rating ) . '"';
-		} ?>
-
 		<fieldset id="add_comment_rating_wrap">
 			<?php ?>
-			<label for="add_post_rating"><?php _e( 'Rating:', 'comments-ratings' ) ?></label>
+			<label for="add_post_rating"><?php esc_html_e( 'Rating:', 'comments-ratings' ) ?></label>
 
-			<div id="add_post_rating" <?php echo $data; ?> data-assets_path="<?php echo esc_url( $this->plugin_baseurl . '/images' ); ?>"></div>
+			<div id="add_post_rating" <?php if ( ! empty( $current_rating ) ) { ?>data-pixrating="<?php echo esc_attr( $current_rating ); ?>" <?php } ?>data-assets_path="<?php echo esc_url( $this->plugin_baseurl . '/images' ); ?>"></div>
 		</fieldset>
 
 	<?php }

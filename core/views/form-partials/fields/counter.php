@@ -34,10 +34,10 @@
 
 <?php if ($is_inline_field): ?>
 	<?php $attrs['class'][] = 'small-text' ?>
-	<input <?php echo $field->htmlattributes($attrs) ?> class="small-text" />
+	<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> class="small-text" />
 <?php else: # standard field ?>
-	<label for="<?php echo $idname ?>">
-		<input <?php echo $field->htmlattributes($attrs) ?> />
-		<?php echo $label ?>
+	<label for="<?php echo esc_attr( $idname ) ?>">
+		<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> />
+		<?php echo esc_html( $label ) ?>
 	</label>
 <?php endif; ?>

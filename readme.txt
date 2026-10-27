@@ -2,8 +2,8 @@
 Contributors: pixelgrade, babbardel, vlad.olaru, raduconstantin
 Tags: comments, rating, reviews
 Requires at least: 4.9.0
-Tested up to: 5.9.0
-Stable tag: 1.1.8
+Tested up to: 7.1
+Stable tag: 1.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,11 @@ Convert comments into reviews for your visitors.
 Easily add a rating system to your comments area and start displaying reviews from your visitors.
 
 == Changelog ==
+
+= 1.1.9 =
+* Security hardening: escape all admin output.
+* Security hardening: validate submitted ratings.
+* Tested with WordPress 7.1.
 
 = 1.1.8 =
 * Security fix: check permissions when saving review fields from the comment editor.

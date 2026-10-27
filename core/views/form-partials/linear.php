@@ -8,8 +8,6 @@
 
 <?php foreach ($conf->get('fields', array()) as $fieldname): ?>
 
-	<?php echo $f->field($fieldname)
-		->addmeta('special_sekrit_property', '!!')
-		->render() ?>
+	<?php echo $f->field($fieldname)->addmeta('special_sekrit_property', '!!')->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field templates escape their own output. ?>
 
 <?php endforeach; ?>

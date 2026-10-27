@@ -21,10 +21,10 @@
 			$fielddesc = $field->getmeta('desc', null);
 			$fieldexample = $field->getmeta('group-example', null);
 			$fieldnote = $field->getmeta('group-note', null); ?>
-				<div class="field" <?php if ( $fieldconfig['type'] == 'group' ) echo 'id="' . $fieldname . '"'; ?> >
-					<?php echo $field->render();
+				<div class="field" <?php if ( $fieldconfig['type'] == 'group' ) echo 'id="' . esc_attr( $fieldname ) . '"'; ?> >
+					<?php echo $field->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field templates escape their own output.
 					if ( ! empty($fieldnote)): ?>
-						<span class="field-note"><?php echo $fieldnote ?></span>
+						<span class="field-note"><?php echo esc_html( $fieldnote ) ?></span>
 					<?php endif; ?>
 				</div>
 		<?php endforeach; ?>

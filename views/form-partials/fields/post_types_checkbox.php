@@ -17,10 +17,10 @@ $post_types = get_post_types();
 if ( ! empty( $post_types ) ) { ?>
 	<div class="post_types_checkbox">
 		<?php if ( isset( $label ) && !empty( $label ) ) { ?>
-			<h3 class="field_title"><?php echo $label; ?></h3>
+			<h3 class="field_title"><?php echo esc_html( $label ); ?></h3>
 		<?php } ?>
 		<?php if ( isset( $description ) && !empty( $description ) ) { ?>
-			<span class="field_description"><?php echo $description; ?></span>
+			<span class="field_description"><?php echo esc_html( $description ); ?></span>
 		<?php } ?>
 		<ul>
 			<?php
@@ -30,10 +30,10 @@ if ( ! empty( $post_types ) ) { ?>
 					'id'   => $idname . '[' . $post_type . ']',
 				); ?>
 				<li>
-					<input type="checkbox" <?php echo $field->htmlattributes( $attrs ); ?> <?php if ( isset( $checked[ $post_type ] ) && $checked[ $post_type ] == 'on' ) {
+					<input type="checkbox" <?php echo $field->htmlattributes( $attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> <?php if ( isset( $checked[ $post_type ] ) && $checked[ $post_type ] == 'on' ) {
 						echo 'checked="checked"';
 					} ?>/>
-					<?php echo $post_type; ?>
+					<?php echo esc_html( $post_type ); ?>
 				</li>
 			<?php } ?>
 		</ul>

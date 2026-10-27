@@ -1,5 +1,10 @@
 <?php
 
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $general_settings = array(
 	'type'    => 'postbox',
 	'label'   => esc_html__('General Settings', 'comments-ratings'),

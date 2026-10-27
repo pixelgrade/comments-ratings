@@ -29,12 +29,12 @@ if ($field->hasmeta('display_option')) {
 	$attrs['data-display_option'] =  $field->getmeta('display_option');
 }?>
 <div class="select">
-	<label id="<?php echo $name ?>"><?php echo $label ?></label>
-	<select <?php echo $field->htmlattributes( $attrs ) ?>>
+	<label id="<?php echo esc_attr( $name ) ?>"><?php echo esc_html( $label ) ?></label>
+	<select <?php echo $field->htmlattributes( $attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?>>
 		<?php foreach ( $this->getmeta( 'options', array() ) as $key => $label ): ?>
 			<option <?php if ($key == $selected): ?>selected<?php endif; ?>
-			        value="<?php echo $key ?>">
-				<?php echo $label ?>
+			        value="<?php echo esc_attr( $key ) ?>">
+				<?php echo esc_html( $label ) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>

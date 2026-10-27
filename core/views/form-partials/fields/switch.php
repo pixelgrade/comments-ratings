@@ -35,10 +35,10 @@
 			$fillers[":$fieldname"] = $form->field($fieldname, $conf)->render();
 		}
 
-		$processed_label = strtr($label, $fillers);
+		$processed_label = strtr( esc_html( $label ), $fillers );
 	}
 	else { // no fillins available
-		$processed_label = $label;
+		$processed_label = esc_html( $label );
 	}
 
 	// group show
@@ -49,16 +49,16 @@
 ?>
 
 <?php if ($rendering == 'inline'): ?>
-	<input <?php echo $field->htmlattributes($attrs) ?> />
+	<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> />
 
 <?php elseif ($rendering == 'blocks'):  ?>
 	<div class="switch">
-		<input <?php echo $field->htmlattributes($attrs) ?> />
-		<label for="<?php echo $idname ?>"><?php echo $processed_label ?></label>
+		<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> />
+		<label for="<?php echo esc_attr( $idname ) ?>"><?php echo $processed_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above; fill-ins are rendered field templates. ?></label>
 	</div>
 <?php else: # rendering != 'inline' ?>
-	<label for="<?php echo $idname ?>">
-		<input <?php echo $field->htmlattributes($attrs) ?> />
-		<?php echo $processed_label ?>
+	<label for="<?php echo esc_attr( $idname ) ?>">
+		<input <?php echo $field->htmlattributes($attrs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute values are escaped with esc_attr() in htmlattributes(). ?> />
+		<?php echo $processed_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above; fill-ins are rendered field templates. ?>
 	</label>
 <?php endif; ?>
