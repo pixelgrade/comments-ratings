@@ -423,7 +423,7 @@ class PixReviewsPlugin {
 		$total = 0;
 		foreach ( $comments as $comment ) {
 			$current_rating  = get_comment_meta( $comment->comment_ID, 'pixrating', true );
-			$total = $total + (double) $current_rating;
+			$total = $total + (float) $current_rating;
 		}
 
 		$average = $total / count( $comments );
